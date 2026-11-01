@@ -74,39 +74,7 @@ EdgeGestureGuard 是一个 **LSPosed 模块**（不修改 system 分区、不是
 | Android 11+ (API 30+) | 按公开 API 下限设计，未逐一验证 |
 | 3 键导航 | 边缘返回规则无实际意义，其余可用 |
 
-## 构建
 
-需要 JDK 17 + Android SDK Platform 35 + aapt2 + d8：
-
-```bash
-# Android Studio / Gradle
-./gradlew :app:assembleDebug
-
-# 无 Gradle 的离线脚本
-ANDROID_JAR=/path/android.jar AAPT2=/path/aapt2 D8_JAR=/path/d8.jar \
-  sh tools/build-local.sh
-```
-
-Xposed API 必须 `compileOnly`（已配好），否则 LSPosed 会拒绝加载模块。
-仓库自带 `tools/verify-apk.py`：校验 dex 内不含 Xposed 类 + resources.arsc 对齐。
-
-### 签名
-
-Release 包使用正式密钥（RSA 4096 / 有效期 30 年，证书主体 `CN=ink-cardistry`）：
-
-- 密钥与口令放在 `signing/`（`edgeguard-release.jks` + `keystore.properties`），**已 gitignore、不入库**；
-- 有 `signing/` 时 `tools/build-local.sh` 自动用它签 release，没有则退回 debug 签名；
-- 从 **debug 版升级到 release 版必须先卸载**（签名不同，Android 会拒绝覆盖安装）。
-
-## 目录结构
-
-```
-app/src/main/java/io/github/ink_cardistry/EdgeGestureGuard/
-├── common/    App 与 Hook 进程共用：规则模型、IPC 契约、日志
-├── xposed/    只加载进 SystemUI / 桌面进程：探测与 Hook 安装
-└── app/       控制器 UI、通知、QS 磁贴、诊断导出
-docs/DEV-NOTES.md   开发笔记（协议、探测过程、踩过的坑）
-```
 
 ## 已知限制
 
